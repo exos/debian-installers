@@ -22,7 +22,7 @@ echo "Changing folder"
 
 cd /usr/src
 
-echo "Download Node.js"
+echo "Downloading Node.js"
 
 wget http://nodejs.org/dist/v0.8.1/node-v0.8.1.tar.gz
 
@@ -31,19 +31,19 @@ if [ $? -ne 0 ]; then
   exit 2
 fi
 
-echo "Check package integrity"
+echo "Checking package integrity"
 
 if [ $(sha1sum node-v0.8.1.tar.gz  | cut -d " " -f1) != $SHA_PACK ]; then
   echo "sha1sum don't match"
   exit 3
 fi
 
-echo "Uncompress"
+echo "Decompressing..."
 
 tar -xf node-v0.8.1.tar.gz
 
 if [ $? -ne 0 ]; then
-  echo "Error uncompressing Node.js"
+  echo "Error decompressing Node.js"
   exit 4
 fi
 
