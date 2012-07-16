@@ -1,7 +1,7 @@
 #!/bin/sh
 
 SHA_PACK="168794dcfb4644ac02dcce863c04b351399b0863"
-SHA_CPATCH="eb07355f9bf11d4d9c77b595694c19a5e2d0d1e3"
+SHA_CPATCH="37182ac745bbcd8d8c9a10ee1782feb76331a5a4"
 SHA_INITS="99911d42e7b3f800ad0379c2c8e1f01c8b7029ba"
 
 CORES_COUNT=$(cat /proc/cpuinfo | grep "processor" | wc -l)
@@ -94,7 +94,7 @@ mv sphinx.conf.dist /etc/sphinx.conf
 
 echo "Downloading configuration patch"
 
-wget http://exodica.com.ar/debian-installers/files/net/sphinx/config-2.0.4-release.patch
+wget http://exodica.com.ar/debian-installers/files/net/sphinx/config-2.0.4-release-1.patch
 
 if [ $? -ne 0 ]; then
   echo "Error downloading onfiguration patch file"
@@ -103,12 +103,12 @@ fi
 
 echo "Check integrity"
 
-if [ $(sha1sum config-2.0.4-release.patch  | cut -d " " -f1) != $SHA_CPATCH ]; then
+if [ $(sha1sum config-2.0.4-release-1.patch  | cut -d " " -f1) != $SHA_CPATCH ]; then
   echo "Error cheking configuration patch file integrity"
   exit 10
 fi
 
-patch /etc/sphinx.conf config-2.0.4-release.patch
+patch /etc/sphinx.conf config-2.0.4-release-1.patch
 
 
 echo "Downloading init script"
@@ -133,6 +133,7 @@ echo "Creating folders and permisits"
 
 mkdir /var/log/sphinx
 mkdir -p /var/lib/sphinx/data
+mkdir -p /var/lib/sphinx/binlog
 mkdir /var/run/sphinx
 touch /var/run/sphinx/searchd.pid
 
