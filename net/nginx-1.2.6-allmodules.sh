@@ -1,7 +1,9 @@
 #!/bin/sh
 
-SHA_PACK="15cec8d1b8dbf2007f9f99594a08a2f45814034e"
+SHA_PACK="432059b668e3f018eab61f99c7cc727db88464e8" 
 SHA_INITS="814c930560f15d4e605d91fe2c5cdd4b6d204256"
+SRC_URL="http://nginx.org/download/nginx-1.2.6.tar.gz"
+DEPENDS="build-essential libc6 libpcre3 libpcre3-dev libpcrecpp0 libssl0.9.8 libssl-dev zlib1g zlib1g-dev lsb-base"
 
 CORES_COUNT=$(cat /proc/cpuinfo | grep "processor" | wc -l)
 
@@ -12,7 +14,7 @@ fi
 
 echo "Instaling dependences"
 
-apt-get update && apt-get -y install build-essential libc6 libpcre3 libpcre3-dev libpcrecpp0 libssl0.9.8 libssl-dev zlib1g zlib1g-dev lsb-base
+apt-get update && apt-get -y install $DEPENDS 
 
 if [ $? -ne 0 ]; then
   echo "Error installing dependeces"
@@ -25,7 +27,7 @@ cd /usr/src
 
 echo "Download Nginx"
 
-wget http://nginx.org/download/nginx-1.2.0.tar.gz
+wget $SRC_URL 
 
 if [ $? -ne 0 ]; then
   echo "Error downloading Nginx"
@@ -34,21 +36,21 @@ fi
 
 echo "Check package integrity"
 
-if [ $(sha1sum nginx-1.2.0.tar.gz  | cut -d " " -f1) != $SHA_PACK ]; then
+if [ $(sha1sum nginx-1.2.6.tar.gz  | cut -d " " -f1) != $SHA_PACK ]; then
   echo "sha1sum don't match"
   exit 3
 fi
 
 echo "Uncompress"
 
-tar -xf nginx-1.2.0.tar.gz
+tar -xf nginx-1.2.6.tar.gz
 
 if [ $? -ne 0 ]; then
   echo "Error uncompressing Nginx"
   exit 4
 fi
 
-cd nginx-1.2.0
+cd nginx-1.2.6
 
 echo "Preparing"
 
@@ -84,23 +86,6 @@ if [ $? -ne 0 ]; then
   exit 7
 fi
 
-echo "Creating logrotate conf"
-
-echo "/var/log/nginx/*.log {
- daily
- missingok
- rotate 52
- compress
- delaycompress
- notifempty
- create 640 root adm
- sharedscripts
- postrotate
-  [ ! -f /var/run/nginx.pid ] || kill -USR1 \`cat /var/run/nginx.pid\`
- endscript
-}
-" > /etc/logrotate.d/nginx 
-
 echo "Downloading init script file"
 
 wget http://exodica.com.ar/debian-installers/files/net/nginx/init.sctipt-1.2.0
@@ -124,6 +109,23 @@ echo "Creating folders and permisits"
 mkdir -p /var/lib/nginx/body
 chown -R www-data:www-data /var/lib/nginx
 chmod +x /etc/init.d/nginx
+
+echo "Creating logrotate conf"
+
+echo "/var/log/nginx/*.log {
+ daily
+ missingok
+ rotate 52
+ compress
+ delaycompress
+ notifempty
+ create 640 root adm
+ sharedscripts
+ postrotate
+  [ ! -f /var/run/nginx.pid ] || kill -USR1 \`cat /var/run/nginx.pid\`
+ endscript
+}
+" > /etc/logrotate.d/nginx 
 
 echo "Adding Nginx as services"
 update-rc.d nginx defaults
